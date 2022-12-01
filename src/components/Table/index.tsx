@@ -39,7 +39,7 @@ function Table({ load }: any) {
     }
     loadTransactions()
 
-  }, [load, clear]);
+  }, [load, clear, token, userId]);
 
 
 
