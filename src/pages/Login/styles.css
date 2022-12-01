@@ -27,3 +27,8 @@
     text-decoration: underline;
     cursor: pointer;
 }
+
+.form h5 {
+    color: red;
+    text-align: center;
+}

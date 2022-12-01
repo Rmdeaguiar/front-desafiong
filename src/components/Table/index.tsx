@@ -16,13 +16,14 @@ function Table({ load }: any) {
     transaction_creditedAccountId: number | string | null
     transaction_debitedAccountId: number | string | null
   }
-  const navigate = useNavigate();
+
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
   const [credit, setCredit] = useState(false);
   const [debit, setDebit] = useState(false);
   const token = getItem('token');
   const userId = getItem('userId')
-  const username = getItem('username')
+  const username = getItem('username');
+
 
   useEffect(() => {
     loadTransactions()
@@ -40,34 +41,28 @@ function Table({ load }: any) {
     });
 
     setAllTransactions(response.data.sort((a: Transaction, b: Transaction) => b.transaction_id - a.transaction_id));
+
   }
 
   function handleCreditTransactions() {
     let filteredTransactions = []
-    setCredit(true)
-
-
     for (let transaction of allTransactions) {
-      if (transaction.transaction_creditedAccountId == userId) {
+      if (transaction.transaction_creditedAccountId === Number(userId)) {
         filteredTransactions.push(transaction);
       }
     }
     setAllTransactions([...filteredTransactions])
-    setCredit(false)
+
   }
 
   function handleDebitTransactions() {
     let filteredTransactions = []
-    setDebit(true)
-
     for (let transaction of allTransactions) {
-      if (transaction.transaction_debitedAccountId == userId) {
+      if (transaction.transaction_debitedAccountId === Number(userId)) {
         filteredTransactions.push(transaction);
       }
     }
     setAllTransactions([...filteredTransactions])
-    setDebit(false)
-
   }
 
   return (
@@ -90,8 +85,8 @@ function Table({ load }: any) {
         <div key={transaction.transaction_id} className='transfer-list'>
           <p>R$ {transaction.transaction_value}</p>
           <p>{format(new Date(transaction.transaction_createdAt), "dd/MM/yyyy")}</p>
-          <p>{transaction.transaction_creditedAccountId == userId ? username : transaction.transaction_creditedAccountId}</p>
-          <p>{transaction.transaction_debitedAccountId == userId ? username : transaction.transaction_debitedAccountId}</p>
+          <p>{transaction.transaction_creditedAccountId === Number(userId) ? username : transaction.transaction_creditedAccountId}</p>
+          <p>{transaction.transaction_debitedAccountId === Number(userId) ? username : transaction.transaction_debitedAccountId}</p>
         </div>
       ))}
     </div>

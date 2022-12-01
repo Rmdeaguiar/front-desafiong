@@ -1,22 +1,18 @@
-import React, { Dispatch, SetStateAction } from 'react';
 import Header from '../../components/Header'
 import Table from '../../components/Table'
 import './styles.css';
 import '../../styles/input.css'
 import '../../styles/button.css'
-import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import { getItem } from '../../utils/storage';
 
 function Home() {
-  const navigate = useNavigate()
-  const userId = getItem('userId');
   const token = getItem('token');
   const [username, setUsername] = useState('');
   const [value, setValue] = useState<any>(0)
   const [balance, setBalance] = useState(100);
-  const [allTransactions, setAllTransactions] = useState<any[]>([]);
+  const [error, setError] = useState(false)
   const [load, setLoad] = useState(true)
 
   useEffect(() => {
@@ -29,29 +25,40 @@ function Home() {
         }
       });
       setBalance(response.data.balance)
+
     }
     loadAccount()
 
-  }, [load]);
+  }, [load, token]);
 
   async function handleNewTransfer(e: any) {
     e.preventDefault();
-    const response = await api.post('/transaction', {
-      usernameCredited: username,
-      value
-    }, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
-    console.log(response.data)
+    setError(false)
 
-    if (response.status > 204) {
-      return
+    try {
+      const response = await api.post('/transaction', {
+        usernameCredited: username,
+        value
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+      console.log(response.data)
+
+      if (response.status > 204) {
+        return
+      }
+      setLoad(!load)
+
+    } catch (error) {
+      console.log(error)
+      setError(true)
+
     }
-    setLoad(!load)
+
   }
 
   return (
@@ -73,6 +80,7 @@ function Home() {
             <label htmlFor='value'>Valor</label>
             <input type='number' name='value' value={value} onChange={(e) => setValue(e.target.value)} />
             <button className='black-btn' onClick={(e) => handleNewTransfer(e)}>Enviar</button>
+            {error && <h5>O usuário não foi encontrado</h5>}
           </form>
         </div>
       </div>

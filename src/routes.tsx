@@ -1,8 +1,8 @@
 import Login from './pages/Login'
 import SignUp from './pages/SignUp';
 import Home from './pages/Home';
-import { Routes, Route, Outlet, Navigate } from 'react-router-dom'
-import { getItem } from './utils/storage'
+import { Routes, Route } from 'react-router-dom'
+// import { getItem } from './utils/storage'
 
 
 

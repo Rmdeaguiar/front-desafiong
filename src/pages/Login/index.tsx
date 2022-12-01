@@ -11,6 +11,7 @@ function Login() {
   const navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const token = getItem('token');
@@ -21,9 +22,11 @@ function Login() {
 
   async function handleLogin(e: any) {
     e.preventDefault();
+    setError(false)
+
 
     try {
-      if (!username || !password || username.length < 8) {
+      if (!username || !password) {
         return
       }
 
@@ -32,9 +35,11 @@ function Login() {
         password
       });
 
+      console.log(response.data)
       if (response.status > 204) {
         return
       }
+
 
       const { token, user } = response.data;
       setItem('token', token);
@@ -43,6 +48,8 @@ function Login() {
       navigate('/home')
 
     } catch (error) {
+      setError(true)
+      console.log('erro')
       console.log(error)
 
     }
@@ -61,6 +68,7 @@ function Login() {
           <button className='green-btn'>Entrar</button>
           <p>Ainda não tem uma conta? <span onClick={() => navigate('/signup')} >Faça seu cadastro aqui</span></p>
         </form>
+        {error && <h5>O usuário ou a senha estão incorretos</h5>}
       </div>
 
     </div>
