@@ -2,7 +2,6 @@ import React from 'react';
 import './styles.css';
 import '../../styles/input.css'
 import '../../styles/button.css'
-import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { getItem } from '../../utils/storage'
 import { format } from 'date-fns'
@@ -18,31 +17,31 @@ function Table({ load }: any) {
   }
 
   const [allTransactions, setAllTransactions] = useState<any[]>([]);
-  const [credit, setCredit] = useState(false);
-  const [debit, setDebit] = useState(false);
   const token = getItem('token');
   const userId = getItem('userId')
   const username = getItem('username');
+  const [clear, setClear] = useState(true)
 
 
   useEffect(() => {
+    async function loadTransactions() {
+
+      const response = await api.get(`/transaction/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*'
+        }
+      });
+
+      setAllTransactions(response.data.sort((a: Transaction, b: Transaction) => b.transaction_id - a.transaction_id));
+
+    }
     loadTransactions()
 
-  }, [load]);
+  }, [load, clear]);
 
-  async function loadTransactions() {
 
-    const response = await api.get(`/transaction/${userId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*'
-      }
-    });
-
-    setAllTransactions(response.data.sort((a: Transaction, b: Transaction) => b.transaction_id - a.transaction_id));
-
-  }
 
   function handleCreditTransactions() {
     let filteredTransactions = []
@@ -72,7 +71,7 @@ function Table({ load }: any) {
         <div className='filter'>
           <h4 onClick={() => handleCreditTransactions()}>Credito</h4>
           <h4 onClick={() => handleDebitTransactions()}>Debito</h4>
-          <h4 onClick={() => loadTransactions()}>Limpar Filtros</h4>
+          <h4 onClick={() => setClear(!clear)}>Limpar Filtros</h4>
         </div>
       </div>
       <div className='table-subtitle'>
